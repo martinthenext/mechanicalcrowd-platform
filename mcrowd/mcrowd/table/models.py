@@ -7,6 +7,9 @@ class Table(models.Model):
     table = models.BinaryField(null=False, blank=False)
     filename = models.TextField(null=False, blank=True, default="")
 
+    def __unicode__(self):
+        return "{}: {}".format(self.pk, self.filename)
+
 
 class Task(models.Model):
     table = models.ForeignKey(Table, null=False, related_name="tasks")
