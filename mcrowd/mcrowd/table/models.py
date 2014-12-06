@@ -5,10 +5,11 @@ from django.contrib.auth.models import User
 class Table(models.Model):
     owner = models.ForeignKey(User, null=False)
     table = models.BinaryField(null=False, blank=False)
+    filename = models.TextField(null=False, blank=True, default="")
 
 
 class Task(models.Model):
-    table = models.ForeignKey(Table, null=False)
+    table = models.ForeignKey(Table, null=False, related_name="tasks")
     sheet = models.TextField(blank=False, null=False)
     columns = models.TextField(blank=False, null=False)
     header_location = models.TextField(blank=False, null=False)
@@ -27,7 +28,7 @@ class Row(models.Model):
         ("D", "DELETED")
     )
 
-    task = models.ForeignKey(Task, null=False)
+    task = models.ForeignKey(Task, null=False, related_name="rows")
     number = models.IntegerField(null=False, db_index=True)
     values = models.TextField(blank=False, null=False)
     status = models.CharField(blank=False, null=False, choices=ROW_STATUS,
