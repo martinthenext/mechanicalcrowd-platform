@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from rest_framework import status
 from rest_framework import exceptions
 from rest_framework.views import APIView
@@ -45,9 +43,6 @@ class TablesView(APIView):
             owner=request.user,
             table=data,
             filename=xlsx_obj.name)
-        localstore = MCROWD_TABLE.get("LOCALSTORE", ".")
-        with open(os.path.join(localstore, str(table.id)), "wb") as h:
-            h.write(data)
         return Response(TableSerializer(table).data, status=200)
 
     def get(self, request, pk=None):
