@@ -1,0 +1,14 @@
+{
+  "upperTask": "Please consider this data entry and fix it if it’s wrong.",
+  "lowerTask": "<b>Data entry is wrong if<b>:<br/>Address is wrong",
+  "table":
+    {
+       "headers" : ["Company", "Address"],
+       "rows": [
+          ["Johm Smith Ltd", "Backer str. 14"],
+          ["Johm Smith Ltd", "Backer str. 14"]
+       ]
+      
+    },
+  "functions" : ["edit", "delete"]
+}
