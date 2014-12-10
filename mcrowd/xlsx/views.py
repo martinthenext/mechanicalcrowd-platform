@@ -10,9 +10,10 @@ import openpyxl
 
 import io
 import logging
+import json
 
-from .models import Table, Task
-from .serializers import TableSerializer, TaskSerializer
+from .models import Table
+from .serializers import TableSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -32,17 +33,18 @@ class TablesView(APIView):
         except Exception as e:
             logger.exception(e)
             raise exceptions.UnsupportedMediaType(xlsx_obj.content_type)
-        return data
+        return (data, book)
 
     def post(self, request):
         xlsx_obj = request.FILES['file']
         logger.debug("table: size: %s", xlsx_obj.size)
         logger.debug("table: content-type: %s", xlsx_obj.content_type)
-        data = self.validate(xlsx_obj)
+        data, book = self.validate(xlsx_obj)
         table = Table.objects.create(
             owner=request.user,
             table=data,
-            filename=xlsx_obj.name)
+            filename=xlsx_obj.name,
+            sheets=json.dumps(book.get_sheet_names()))
         return Response(TableSerializer(table).data, status=200)
 
     def get(self, request, pk=None):
@@ -55,10 +57,3 @@ class TableView(RetrieveAPIView):
 
     def get_queryset(self):
         return Table.objects.filter(owner=self.request.user)
-
-
-class TasksView(ListCreateAPIView):
-    serializer_class = TaskSerializer
-
-    def get_queryset(self):
-        return Task.objects.filter(table__owner=self.request.user)
