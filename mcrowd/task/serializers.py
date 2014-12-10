@@ -42,8 +42,12 @@ class TaskSerializer(serializers.ModelSerializer):
     def transform_columns(self, obj, value):
         if not obj:
             return value
-        return ",".join(
-            map(lambda x: x[1], sorted(json.loads(value).items())))
+        try:
+            value = json.loads(value)
+            return ",".join(
+                map(lambda x: x[1], sorted(value.items())))
+        except ValueError:
+            return value
 
     class Meta:
         model = Task

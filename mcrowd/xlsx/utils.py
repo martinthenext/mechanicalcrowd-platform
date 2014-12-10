@@ -79,7 +79,7 @@ def get_header_index_by_name(header, name):
 
 
 def is_empty_row(row):
-    not_empty = filter(lambda x: x.value, row)
+    not_empty = list(filter(lambda x: x.value, row))
     return not bool(not_empty)
 
 
@@ -94,7 +94,4 @@ def get_data_rows(sheet, header, columns, data_location):
     data = get_range(sheet, left_column, left_row, right_column, right_row)
     for i, row in enumerate(data):
         selected = tuple(filter(lambda x: x.column in columns, row))
-        if not is_empty_row(selected) or right_defined:
-            yield left_row + i, selected
-        else:
-            raise StopIteration()
+        yield left_row + i, selected

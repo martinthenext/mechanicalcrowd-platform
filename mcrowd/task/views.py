@@ -17,6 +17,7 @@ from .serializers import TaskSerializer
 from mcrowd.xlsx.models import Table
 from mcrowd.xlsx.utils import get_sheet_by_name, get_header_columns
 from mcrowd.xlsx.utils import get_data_rows, get_header_index_by_name
+from mcrowd.xlsx.utils import is_empty_row
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,9 @@ class TaskSaveHook:
             obj.rows.all().delete()
         objects = []
         for number, row in self.rows:
-            values = dict(map(lambda x: (x.column, x.value), row))
+            if is_empty_row(row):
+                continue
+            values = dict(map(lambda x: (x.column, x.value or ""), row))
             objects.append(Row(task=obj, number=number, values=values))
         Row.objects.bulk_create(objects, batch_size=self.BATCH_SIZE)
 
