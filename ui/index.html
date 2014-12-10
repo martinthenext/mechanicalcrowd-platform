@@ -1,0 +1,111 @@
+<!doctype html>
+<html ng-app="CrudApp">
+
+<head>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+     <link href="style.css" rel="stylesheet">
+	
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
+
+
+
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-resource.min.js"></script>
+
+
+    <script src="lodash.js"></script>
+    <script src="xeditable.js"></script>
+    
+    <script src="app.js"></script>
+</head>
+
+<body ng-controller="MainCtrl">
+	<div class="container">
+
+		<h2>Table task</h2>
+
+		
+		<img src="http://static.espas.pro/images/static/spinner.gif" ng-hide="dataSet"/>
+
+		<!-- sample data --> 
+		<div ng-hide="hasAssignment">
+
+			<h2>{{sampleData.upperText}}</h2>
+			<div class="table-responsive">
+				<table class="table table-striped" >
+				  <th ng-repeat="header in sampleData.dataSet.table.headers">
+				    	{{header}}
+				  </th>
+		
+				  <th ng-show="canDelete">
+				  </th>
+			 		
+				  
+				  <tr ng-repeat="row in sampleData.dataSet.table.rows">
+				    <td ng-repeat="cell in row">
+				      <a href="#" editable-text="cell" onaftersave="canNotSave()">
+				        {{cell}}
+				      </a>
+				    </td>
+				   
+				    <td ng-show="canDelete">
+
+				        <button class="btn btn-danger" ng-click="canNotSave()">
+				            <i class="glyphicon glyphicon-remove"></i>
+				        </button>
+				        
+				    </td>
+				  </tr>
+				</table>
+			</div>
+
+		</div>
+
+		<!-- real data -->
+		
+		<div ng-show="dataSet">
+
+			<p>{{dataSet.upperText}}</p>
+			<div class="table-responsive">
+				<table class="table table-striped" >
+				  <th ng-repeat="header in dataSet.table.headers">
+				    	{{header}}
+				  </th>
+		
+				  <th ng-show="canDelete">
+				  </th>
+			 		
+				  
+				  <tr ng-repeat="row in dataSet.table.rows">
+				    <td ng-repeat="cell in row">
+				      <a href="#" editable-text="cell" onaftersave="updateRow($index, $parent.$parent.$index, $parent.cell)">
+				        {{cell || 'empty'}}
+				      </a>
+				    </td>
+				   
+				    <td ng-show="canDelete">
+
+				        <button class="btn btn-danger" ng-click="deleteItem(row)">
+				            <i class="glyphicon glyphicon-remove"></i>
+				        </button>
+				        
+				    </td>
+				  </tr>
+				</table>
+			</div>
+
+			<p ng-bind-html="dataSet.lowerTask | to_trusted"></p>
+
+			<div class="text-center">
+				<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
+			</div>
+
+		</div>
+
+		
+
+	</div>
+</body>
+
+</html>
