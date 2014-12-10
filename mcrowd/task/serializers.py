@@ -39,6 +39,12 @@ class TaskSerializer(serializers.ModelSerializer):
                 "Expected format: 'A1:C100' or 'A1:'")
         return attrs
 
+    def transform_columns(self, obj, value):
+        if not obj:
+            return value
+        return ",".join(
+            map(lambda x: x[1], sorted(json.loads(value).items())))
+
     class Meta:
         model = Task
         depth = 0

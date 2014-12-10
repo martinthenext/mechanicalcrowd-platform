@@ -84,8 +84,6 @@ def is_empty_row(row):
 
 
 def get_data_rows(sheet, header, columns, data_location):
-    column_indices = set(map(lambda x: get_header_index_by_name(header, x),
-                         columns))
     left_column, left_row, right_column, right_row, right_defined = \
         get_square_indices(sheet, data_location)
     if not right_defined:
@@ -93,12 +91,9 @@ def get_data_rows(sheet, header, columns, data_location):
     if column_index_from_string(header[0].column) != left_column:
         raise exceptions.ParseError(
             detail="Header left index should be equals to data left index")
-    logger.debug("data square: %s.%s:%s.%s",
-                 left_column, left_row, right_column, right_row)
-    logger.debug("columns: %s : %s", columns, column_indices)
     data = get_range(sheet, left_column, left_row, right_column, right_row)
     for i, row in enumerate(data):
-        selected = tuple(filter(lambda x: x.column in column_indices, row))
+        selected = tuple(filter(lambda x: x.column in columns, row))
         if not is_empty_row(selected) or right_defined:
             yield left_row + i, selected
         else:
