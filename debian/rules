@@ -2,3 +2,15 @@
 
 %:
 	dh $@ --with=python3
+
+override_dh_install:
+	install -D -m 644 config/mcrowd.nginx.conf debian/mechanicalcrowd-platform/etc/nginx/sites-available/mcrowd.conf
+	install -D -m 644 config/mcrowd.uwsgi.ini debian/mechanicalcrowd-platform/etc/uwsgi/apps-available/mcrowd.ini
+	mkdir -p debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk
+	mkdir -p debian/mechanicalcrowd-platform/usr/share/mcrowd/www/static
+	install -m 644 ui/*.js ui/*.css  -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk
+	install -m 644 ui/index.html  -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk
+	install -m 644 config/robots.txt  -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www
+	python3 mcrowd.py collectstatic --settings=config.buildsettings --noinput
+	dh_install --
+	mv debian/mechanicalcrowd-platform/usr/bin/mcrowd.py debian/mechanicalcrowd-platform/usr/bin/mcrowd
