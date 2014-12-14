@@ -71,6 +71,7 @@ function MainCtrl($scope, $http, $location){
 
     $scope.canNotSave = canNotSave;
 
+    $scope.isFromMturk = false;
 
 
 
@@ -86,6 +87,10 @@ function MainCtrl($scope, $http, $location){
 
 
     function activate(){
+
+      if(isOpenFromMTurk()){
+        $scope.isFromMturk = true;
+      }
 
           //CSRF TOKEN
       $http.get('csrf.json').then(function(response){
@@ -127,6 +132,19 @@ function MainCtrl($scope, $http, $location){
 
     };
 
+    // let's check if the page is opened from Mturk
+     function isOpenFromMTurk() {
+        var re = /mturk.com/;
+        if (window.self === window.top) {
+          return false;
+        } else {
+          if (re.test(document.referrer)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
 
 
     
