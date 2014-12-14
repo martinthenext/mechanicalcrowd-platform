@@ -1,4 +1,5 @@
 import logging
+import json
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -28,6 +29,19 @@ class Task(models.Model):
     active = models.BooleanField(null=False, default=False)
     edit_allowed = models.BooleanField(null=False, default=True)
     delete_allowed = models.BooleanField(null=False, default=True)
+
+    def get_rows_dict(self):
+        get_values = lambda y: list(map(lambda x: x[1], json.loads(y).items()))
+        return dict(list(map(lambda x: (x.number, get_values(x.values)),
+                         self.rows.all())))
+
+    def get_col_names(self):
+        return ",".join(
+            map(lambda x: x[1], sorted(json.loads(self.columns).items())))
+
+    def get_col_ids(self):
+        return ",".join(
+            map(lambda x: x[0], sorted(json.loads(self.columns).items())))
 
 
 class Row(models.Model):

@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework import exceptions
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 
 from django.shortcuts import get_object_or_404
 
@@ -12,7 +13,7 @@ import json
 import logging
 
 from .models import Task, Row
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, TableSerializer
 
 from mcrowd.xlsx.models import Table
 from mcrowd.xlsx.utils import get_sheet_by_name, get_header_columns
@@ -57,7 +58,8 @@ class TaskSaveHook:
             if is_empty_row(row):
                 continue
             values = dict(map(lambda x: (x.column, x.value or ""), row))
-            objects.append(Row(task=obj, number=number, values=values))
+            objects.append(Row(task=obj, number=number,
+                               values=json.dumps(values)))
         Row.objects.bulk_create(objects, batch_size=self.BATCH_SIZE)
 
 
@@ -81,3 +83,10 @@ class TaskView(TaskSaveHook, RetrieveUpdateDestroyAPIView):
             raise exceptions.MethodNotAllowed(
                 self.request.method, detail="Could not change active task")
         return obj
+
+
+class TableView(RetrieveUpdateAPIView):
+    serializer_class = TableSerializer
+
+    def get_queryset(self):
+        return Task.objects.filter(table__owner=self.request.user)

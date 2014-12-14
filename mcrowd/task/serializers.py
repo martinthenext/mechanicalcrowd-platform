@@ -7,7 +7,7 @@ from rest_framework import exceptions
 
 from mcrowd.xlsx.models import Table
 
-from .models import Task
+from .models import Task, Row
 
 
 logger = logging.getLogger(__name__)
@@ -52,3 +52,14 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         depth = 0
+
+
+class TableSerializer(serializers.ModelSerializer):
+    col_names = serializers.Field(source='get_col_names')
+    col_ids = serializers.Field(source='get_col_ids')
+    rows = serializers.Field(source='get_rows_dict')
+
+    class Meta:
+        model = Task
+        depth = 1
+        fields = ('id', 'col_names', 'col_ids', 'rows')
