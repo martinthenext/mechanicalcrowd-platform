@@ -1,8 +1,10 @@
-import logging
 import json
+import logging
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
+from .managers import RowDiffManager
 
 from mcrowd.xlsx.models import Table
 
@@ -12,14 +14,8 @@ logger = logging.getLogger(__name__)
 class Task(models.Model):
     table = models.ForeignKey(
         Table, null=False, related_name="tasks")
-    sheet = models.TextField(
-        blank=False, null=False)
     columns = models.TextField(
         blank=True, null=False, default="")
-    header_location = models.TextField(
-        blank=False, null=False, default="A1:")
-    data_location = models.TextField(
-        blank=False, null=False, default="A2:")
     wrong_rows_definition = models.TextField(
         blank=True, null=False, default="")
     task_definition = models.TextField(
@@ -30,18 +26,16 @@ class Task(models.Model):
     edit_allowed = models.BooleanField(null=False, default=True)
     delete_allowed = models.BooleanField(null=False, default=True)
 
-    def get_rows_dict(self):
-        get_values = lambda y: list(map(lambda x: x[1], json.loads(y).items()))
-        return dict(list(map(lambda x: (x.number, get_values(x.values)),
-                         self.rows.all())))
-
     def get_col_names(self):
-        return ",".join(
-            map(lambda x: x[1], sorted(json.loads(self.columns).items())))
+        return json.loads(self.columns)
 
     def get_col_ids(self):
-        return ",".join(
-            map(lambda x: x[0], sorted(json.loads(self.columns).items())))
+        return list(map(lambda x: self.table.get_index(x),
+                        self.get_col_names()))
+
+    def get_original_rows(self):
+        return list(map(lambda x: [x.number, json.loads(x.values)],
+                        self.rows.all()))
 
 
 class Row(models.Model):
@@ -57,3 +51,21 @@ class Row(models.Model):
     values = models.TextField(blank=False, null=False)
     status = models.CharField(blank=False, null=False, choices=ROW_STATUS,
                               max_length=2, default="G")
+
+    def get_values(self):
+        return json.loads(self.values)
+
+
+class RowDiff(models.Model):
+    task = models.ForeignKey(Task, null=False, related_name="diff")
+    number = models.IntegerField(null=False, db_index=True)
+    values = models.TextField(blank=False, null=True)  # null means deleted
+    meta = models.TextField(blank=False, null=False, default="{}")
+
+    def get_values(self):
+        return json.loads(self.values)
+
+    def get_meta(self):
+        return json.loads(self.meta)
+
+    objects = RowDiffManager()
