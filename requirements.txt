@@ -4,6 +4,7 @@ Pillow==2.3.0
 PyJWT==0.3.0
 Pygments==1.6
 South==1.0.1
+boto==2.34.0
 django-filter==0.7
 djangorestframework==2.4.3
 djangorestframework-jwt==1.0.2

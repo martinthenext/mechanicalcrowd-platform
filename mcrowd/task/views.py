@@ -22,6 +22,7 @@ from .settings import BATCH_SIZE
 
 from mcrowd.xlsx.models import Table
 from mcrowd.xlsx.utils import is_empty_row
+from mcrowd.mturk.models import Hit
 
 from mcrowd.common.exceptions import BadRequest
 
@@ -131,3 +132,24 @@ class RowDiffView(APIView):
                                 meta=json.dumps(meta)))
         RowDiff.objects.bulk_create(diff, batch_size=BATCH_SIZE)
         return Response(status=201)
+
+
+class SubmitView(APIView):
+    def post(self, request, pk=None):
+        reward = request.DATA.get("reward")
+        max_assignments = request.DATA.get("max_assignments")
+        task = get_object_or_404(
+            Task, pk=pk, table__worksheet__workbook__owner=self.request.user)
+        diffs = RowDiff.objects.get_last(task)
+        hits = []
+        for diff in [x for x in diffs if x.get_meta().get("submit")]:
+            hits.append(Hit.objects.create_hit(
+                task, diff, reward=reward,
+                max_assignments=max_assignments))
+        try:
+            Hit.objects.bulk_create(hits, batch_size=BATCH_SIZE)
+        except Exception as error:
+            for hit in hits:
+                hit.disable()
+            raise
+        return Response({"hits_created": len(hits)}, status=201)

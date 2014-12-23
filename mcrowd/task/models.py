@@ -37,6 +37,14 @@ class Task(models.Model):
         return list(map(lambda x: [x.number, json.loads(x.values)],
                         self.rows.all()))
 
+    def get_functions(self):
+        functions = []
+        if self.edit_allowed:
+            functions.append("edit")
+        if self.delete_allowed:
+            functions.append("delete")
+        return functions
+
 
 class Row(models.Model):
     ROW_STATUS = (
