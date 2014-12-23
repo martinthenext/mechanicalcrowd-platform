@@ -11,7 +11,7 @@ override_dh_install:
 	mkdir -p debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/vendor
 	mkdir -p debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/img
 	mkdir -p debian/mechanicalcrowd-platform/usr/share/mcrowd/www/static
-	install -m 644 ui/js/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/ui
+	install -m 644 ui/js/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/js
 	install -m 644 ui/css/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/css
 	install -m 644 ui/img/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/img
 	install -m 644 ui/vendor/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/vendor
