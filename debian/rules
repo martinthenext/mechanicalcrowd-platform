@@ -14,7 +14,7 @@ override_dh_install:
 	install -m 644 ui/js/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/js
 	install -m 644 ui/css/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/css
 	install -m 644 ui/img/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/img
-	install -m 644 ui/vendor/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/vendor
+	install -m 644 -d ui/vendor/*   -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk/vendor
 	install -m 644 ui/index.html  -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www/mturk
 	install -m 644 config/robots.txt  -t debian/mechanicalcrowd-platform/usr/share/mcrowd/www
 	python3 mcrowd.py collectstatic --settings=config.buildsettings --noinput
