@@ -9,7 +9,7 @@ angular.module('CrudApp', [
   //   //CSRF
   // $http.defaults.headers.common['X-CSRF-Token'] = getCsrf();
 
-  
+
 
 
 }])
@@ -35,14 +35,14 @@ MainCtrl.$inject = ['$scope', '$http', '$location'];
 
 function MainCtrl($scope, $http, $location){
 
-    
-    
+
+
     $scope.dataSet = {
       table: {
         rows: []
       },
     };
-    
+
 
     //This is for Sample Data
     $scope.sampleData = {
@@ -56,7 +56,7 @@ function MainCtrl($scope, $http, $location){
                                rows: [
                                   ["Johm Smith Ltd", "Backer str. 14"]
                                ]
-                              
+
                             },
                           functions : ["edit", "delete"]
                 }
@@ -66,7 +66,7 @@ function MainCtrl($scope, $http, $location){
     $scope.updateRow = updateRow;
 
     $scope.deleteItem = deleteItem;
-    
+
     $scope.sendAll = sendAll;
 
     $scope.canNotSave = canNotSave;
@@ -100,7 +100,7 @@ function MainCtrl($scope, $http, $location){
       }, function(error){
         $scope.csrf = null;
       });
-      
+
 
       //check if we have a worker
       urlParams = $location.search();
@@ -109,17 +109,17 @@ function MainCtrl($scope, $http, $location){
         $scope.hasAssignment = false;
       }
       if($scope.hasAssignment){
-          $http.get('data.json').then(function(response){
+          $http.get("https://platform.comnsense.io/mturk/hit/").then(function(response){
                 //parse response
                 $scope.dataSet = response.data;
 
-               
+
 
                 if(_.contains($scope.dataSet.functions, 'edit')){
-                  $scope.canEdit = true;      
+                  $scope.canEdit = true;
                 }
                 if(_.contains($scope.dataSet.functions, 'delete')){
-                  $scope.canDelete = true;      
+                  $scope.canDelete = true;
                 }
 
 
@@ -147,15 +147,15 @@ function MainCtrl($scope, $http, $location){
       }
 
 
-    
+
 
     // Update dataSet with proper row and cell
     function updateRow(cellIndex, rowIndex, data){
 
         $scope.dataSet.table.rows[rowIndex][cellIndex] = data;
     }
-              
-   
+
+
     // Send everything as POST
     function sendAll(){
 
@@ -167,14 +167,14 @@ function MainCtrl($scope, $http, $location){
         else{
               var dataToSend = {
                   rows: $scope.dataSet.table.rows,
-                  worker_id: urlParams.worker_id,
-                  assignment_id: urlParams.assignment_id,
-                  hit_id: urlParams.hit_id,
+		  token: $scope.dataSet.token,
+		  mturk: {
+                      worker_id: urlParams.worker_id,
+                      assignment_id: urlParams.assignment_id,
+                      hit_id: urlParams.hit_id,
+		  }
               };
-              $http.post('response.json', dataToSend, 
-                {
-                  headers: {'X-CSRF-Token': $scope.csrf},
-                })
+              $http.post('https//platform.comnsense.io/mturk/hit/', dataToSend)
                   .then(function(response){
                       alert('all good');
                   }, function(error){
@@ -182,14 +182,14 @@ function MainCtrl($scope, $http, $location){
                       console.log(error);
               });
         }
-       
+
     }
 
 
     function canNotSave(){
       alert('You can not do that with sample data');
     }
-    
+
     // Delete row
     function deleteItem(row){
         if(!$scope.canDelete){
@@ -198,6 +198,6 @@ function MainCtrl($scope, $http, $location){
         else{
             $scope.dataSet.table.rows = _.without($scope.dataSet.table.rows, row);
         }
-        
+
     };
 }

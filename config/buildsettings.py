@@ -3,7 +3,7 @@ BASE_DIR = os.path.dirname(__file__)
 SECRET_KEY = 'build'
 ALLOWED_HOSTS = []
 INSTALLED_APPS = (
-    'django.contrib.admin',
+    #  'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -13,6 +13,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'mcrowd.xlsx',
     'mcrowd.task',
+    'mcrowd.mturk'
 )
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
