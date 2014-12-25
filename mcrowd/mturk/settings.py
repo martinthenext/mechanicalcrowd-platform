@@ -8,7 +8,8 @@ if hasattr(S, "MTURK"):
 else:
     MTURK = {}
 
-HOST = MTURK.get("HOST", "workersandbox.mturk.com")
+HOST = MTURK.get("HOST", "mechanicalturk.sandbox.amazonaws.com")
+URLHOST = MTURK.get("URLHOST", "workersandbox.mturk.com")
 
 ACCESS_KEY = MTURK.get("ACCESS_KEY")
 SECRET_KEY = MTURK.get("SECRET_KEY")

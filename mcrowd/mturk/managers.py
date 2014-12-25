@@ -9,7 +9,7 @@ from boto.mturk.question import ExternalQuestion
 from boto.mturk.price import Price
 
 from .settings import DEFAULT_REWORD, DEFAULT_MAX_ASSIGNMENTS
-from .settings import HOST, ACCESS_KEY, SECRET_KEY
+from .settings import HOST, ACCESS_KEY, SECRET_KEY, URLHOST
 from .settings import QUESTION_KEYWORDS, QUESTION_LIFETIME
 from .settings import QUESTION_TITLE, QUESTION_DESC, QUESTION_ANNOTATION
 from .settings import QUESTION_URL, QUESTION_HEIGHT
@@ -66,7 +66,8 @@ class HitManager(models.Manager):
             annotation=QUESTION_ANNOTATION)
         hit = result[0]
 
-        url = "https://{}/mturk/preview?groupId={}".format(HOST, hit.HITTypeId)
+        url = "https://{}/mturk/preview?groupId={}".format(
+            URLHOST, hit.HITTypeId)
 
         return self.model(
             ident=hit.HITId, task=task,
