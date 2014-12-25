@@ -79,6 +79,7 @@ function MainCtrl($scope, $http, $location){
     $scope.hasAssignment = true;
     $scope.canEdit = false;
     $scope.canDelete = false;
+    $scope.errorContainer = "";
 
     var urlParams;
 
@@ -88,18 +89,11 @@ function MainCtrl($scope, $http, $location){
 
     function activate(){
 
-      if(isOpenFromMTurk()){
-        $scope.isFromMturk = true;
+      if(!isOpenFromMTurk()){
+        $scope.errorContainer = "Sorry, this page is supposed to be opened only from MTurk";
       }
 
-          //CSRF TOKEN
-      $http.get('csrf.json').then(function(response){
-
-        $scope.csrf = response.data.token;
-
-      }, function(error){
-        $scope.csrf = null;
-      });
+      
       
 
       //check if we have a worker
@@ -109,9 +103,17 @@ function MainCtrl($scope, $http, $location){
         $scope.hasAssignment = false;
       }
       if($scope.hasAssignment){
-          $http.get('data.json').then(function(response){
+          $http.get('https://platform.comnsense.io/mturk/hit/', {
+            params: {
+              worker_id: urlParams.workerId,
+              hit_id: urlParams.hitId,
+              assignment_id: urlParams.assignmentId,
+            },
+            
+          }).then(function(response){
                 //parse response
                 $scope.dataSet = response.data;
+                $scope.csrf = response.data.token;
 
                
 
@@ -124,8 +126,8 @@ function MainCtrl($scope, $http, $location){
 
 
             }, function(error){
-                alert("Houston, we've got a problem! Check the console to see what's up" );
-                console.log(error);
+                if((error.status === 401) || (error.status === 403));
+                $scope.errorContainer = "You can't accept this hit";
             });
       }
 
@@ -134,16 +136,28 @@ function MainCtrl($scope, $http, $location){
 
     // let's check if the page is opened from Mturk
      function isOpenFromMTurk() {
-        var re = /mturk.com/;
-        if (window.self === window.top) {
-          return false;
+
+        var mturk = "mturk.com";
+
+        if (parent === window) {
+          return true;
         } else {
-          if (re.test(document.referrer)) {
+
+          var referrer = document.referrer;
+          var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i); 
+          var domain = referrer.match(re) && referrer.match(re)[1];
+
+            //check if ends with mturk.com
+          if (domain.indexOf(mturk, domain.length - mturk.length) !== -1) {
+
             return true;
           } else {
             return false;
           }
         }
+
+
+
       }
 
 
@@ -167,19 +181,17 @@ function MainCtrl($scope, $http, $location){
         else{
               var dataToSend = {
                   rows: $scope.dataSet.table.rows,
-                  worker_id: urlParams.worker_id,
-                  assignment_id: urlParams.assignment_id,
-                  hit_id: urlParams.hit_id,
+                  worker_id: urlParams.workerId,
+                  assignment_id: urlParams.assignmentId,
+                  hit_id: urlParams.hitId,
+                  token: $scope.csrf,
               };
-              $http.post('response.json', dataToSend, 
-                {
-                  headers: {'X-CSRF-Token': $scope.csrf},
-                })
+              $http.post('https://platform.comnsense.io/mturk/hit/', dataToSend
+               )
                   .then(function(response){
                       alert('all good');
                   }, function(error){
-                      alert("Houston, we've got a problem! Check the console to see what's up" );
-                      console.log(error);
+                      $scope.errorContainer = "Error on sending data";
               });
         }
        
@@ -196,7 +208,13 @@ function MainCtrl($scope, $http, $location){
             alert('You cannot delete!');
         }
         else{
-            $scope.dataSet.table.rows = _.without($scope.dataSet.table.rows, row);
+            var index = _.indexOf($scope.dataSet.table.rows, row);
+            if(index >= 0){
+              $scope.dataSet.table.rows[index] = null;
+            }
+            else{
+              alert('Row not found!');
+            }
         }
         
     };

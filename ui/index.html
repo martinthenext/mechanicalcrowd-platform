@@ -28,83 +28,93 @@
 		
 		<img src="img/spinner.gif" ng-hide="dataSet"/>
 		
-		<div ng-show="isFromMturk">
-			<h3>Sorry, this page is supposed to be opened only from MTurk</h3>
+		
+
+		<div class="alert alert-danger" ng-show="errorContainer.length">
+			<h3>{{errorContainer}}</h3>
 		</div>
-
-		<!-- sample data --> 
-		<div ng-hide="hasAssignment">
-
-			<h2>{{sampleData.upperText}}</h2>
-			<div class="table-responsive">
-				<table class="table table-striped" >
-				  <th ng-repeat="header in sampleData.dataSet.table.headers">
-				    	{{header}}
-				  </th>
 		
-				  <th ng-show="canDelete">
-				  </th>
-			 		
-				  
-				  <tr ng-repeat="row in sampleData.dataSet.table.rows">
-				    <td ng-repeat="cell in row">
-				      <a href="#" editable-text="cell" onaftersave="canNotSave()">
-				        {{cell}}
-				      </a>
-				    </td>
-				   
-				    <td ng-show="canDelete">
+		<div ng-show="!errorContainer.length">
+			<!-- sample data --> 
+			<div ng-hide="hasAssignment">
 
-				        <button class="btn btn-danger" ng-click="canNotSave()">
-				            <i class="glyphicon glyphicon-remove"></i>
-				        </button>
-				        
-				    </td>
-				  </tr>
-				</table>
+				<h2>{{sampleData.upperText}}</h2>
+				<div class="table-responsive">
+					<table class="table table-striped" >
+					  <th ng-repeat="header in sampleData.dataSet.table.headers">
+					    	{{header}}
+					  </th>
+			
+					  <th ng-show="canDelete">
+					  </th>
+				 		
+					  
+					  <tr ng-repeat="row in sampleData.dataSet.table.rows" ng-hide="row === null">
+
+						    <td ng-repeat="cell in row">
+						      <a href="#" editable-text="cell" onaftersave="canNotSave()">
+						        {{cell}}
+						      </a>
+						    </td>
+						   
+						    <td ng-show="canDelete">
+
+						        <button class="btn btn-danger" ng-click="canNotSave()">
+						            <i class="glyphicon glyphicon-remove"></i>
+						        </button>
+						        
+						    </td>
+
+					  </tr>
+					</table>
+				</div>
+			
+				<p>Please note, that you can just take a HIT of this type once. If have already finished a HIT like this, you won't be able to take another one.</p>
+
 			</div>
 
-		</div>
+			<!-- real data -->
+			
+			<div ng-show="dataSet">
 
-		<!-- real data -->
-		
-		<div ng-show="dataSet">
+				<p>{{dataSet.upperText}}</p>
+				<div class="table-responsive">
+					<table class="table table-striped" >
+					  <th ng-repeat="header in dataSet.table.headers">
+					    	{{header}}
+					  </th>
+			
+					  <th ng-show="canDelete">
+					  </th>
+				 		
+					  
+					  <tr ng-repeat="row in dataSet.table.rows" ng-hide="row === null">
 
-			<p>{{dataSet.upperText}}</p>
-			<div class="table-responsive">
-				<table class="table table-striped" >
-				  <th ng-repeat="header in dataSet.table.headers">
-				    	{{header}}
-				  </th>
-		
-				  <th ng-show="canDelete">
-				  </th>
-			 		
-				  
-				  <tr ng-repeat="row in dataSet.table.rows">
-				    <td ng-repeat="cell in row">
-				      <a href="#" editable-text="cell" onaftersave="updateRow($index, $parent.$parent.$index, $parent.cell)">
-				        {{cell || 'empty'}}
-				      </a>
-				    </td>
-				   
-				    <td ng-show="canDelete">
+						    <td ng-repeat="cell in row">
+						      <a href="#" editable-text="cell" onaftersave="updateRow($index, $parent.$parent.$index, $parent.cell)">
+						        {{cell || 'empty'}}
+						      </a>
+						    </td>
+						   
+						    <td ng-show="canDelete">
 
-				        <button class="btn btn-danger" ng-click="deleteItem(row)">
-				            <i class="glyphicon glyphicon-remove"></i>
-				        </button>
-				        
-				    </td>
-				  </tr>
-				</table>
+						        <button class="btn btn-danger" ng-click="deleteItem(row)">
+						            <i class="glyphicon glyphicon-remove"></i>
+						        </button>
+						        
+						    </td>
+
+					  </tr>
+					</table>
+				</div>
+
+				<p ng-bind-html="dataSet.lowerTask | to_trusted"></p>
+
+				<div class="text-center">
+					<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
+				</div>
+
 			</div>
-
-			<p ng-bind-html="dataSet.lowerTask | to_trusted"></p>
-
-			<div class="text-center">
-				<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
-			</div>
-
 		</div>
 
 		
