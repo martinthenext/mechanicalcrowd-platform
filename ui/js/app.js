@@ -9,7 +9,7 @@ angular.module('CrudApp', [
   //   //CSRF
   // $http.defaults.headers.common['X-CSRF-Token'] = getCsrf();
 
-
+  
 
 
 }])
@@ -35,14 +35,14 @@ MainCtrl.$inject = ['$scope', '$http', '$location'];
 
 function MainCtrl($scope, $http, $location){
 
-
-
+    
+    
     $scope.dataSet = {
       table: {
         rows: []
       },
     };
-
+    
 
     //This is for Sample Data
     $scope.sampleData = {
@@ -56,7 +56,7 @@ function MainCtrl($scope, $http, $location){
                                rows: [
                                   ["Johm Smith Ltd", "Backer str. 14"]
                                ]
-
+                              
                             },
                           functions : ["edit", "delete"]
                 }
@@ -66,7 +66,7 @@ function MainCtrl($scope, $http, $location){
     $scope.updateRow = updateRow;
 
     $scope.deleteItem = deleteItem;
-
+    
     $scope.sendAll = sendAll;
 
     $scope.canNotSave = canNotSave;
@@ -93,6 +93,9 @@ function MainCtrl($scope, $http, $location){
         $scope.errorContainer = "Sorry, this page is supposed to be opened only from MTurk";
       }
 
+      
+      
+
       //check if we have a worker
       urlParams = $location.search();
 
@@ -106,19 +109,19 @@ function MainCtrl($scope, $http, $location){
               hit_id: urlParams.hitId,
               assignment_id: urlParams.assignmentId,
             },
-
+            
           }).then(function(response){
                 //parse response
                 $scope.dataSet = response.data;
                 $scope.csrf = response.data.token;
 
-
+               
 
                 if(_.contains($scope.dataSet.functions, 'edit')){
-                  $scope.canEdit = true;
+                  $scope.canEdit = true;      
                 }
                 if(_.contains($scope.dataSet.functions, 'delete')){
-                  $scope.canDelete = true;
+                  $scope.canDelete = true;      
                 }
 
 
@@ -141,7 +144,7 @@ function MainCtrl($scope, $http, $location){
         } else {
 
           var referrer = document.referrer;
-          var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
+          var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i); 
           var domain = referrer.match(re) && referrer.match(re)[1];
 
             //check if ends with mturk.com
@@ -158,15 +161,15 @@ function MainCtrl($scope, $http, $location){
       }
 
 
-
+    
 
     // Update dataSet with proper row and cell
     function updateRow(cellIndex, rowIndex, data){
 
         $scope.dataSet.table.rows[rowIndex][cellIndex] = data;
     }
-
-
+              
+   
     // Send everything as POST
     function sendAll(){
 
@@ -177,30 +180,31 @@ function MainCtrl($scope, $http, $location){
         }
         else{
               var dataToSend = {
-                  rows: $scope.dataSet.table.rows,
-		  mturk: {
-                      worker_id: urlParams.workerId,
-                      assignment_id: urlParams.assignmentId,
-                      hit_id: urlParams.hitId,
-		  }
                   token: $scope.csrf,
+                  
+                  mturk: {
+                    worker_id: urlParams.workerId,
+                    assignment_id: urlParams.assignmentId,
+                    hit_id: urlParams.hitId,
+                  },
+                  rows: $scope.dataSet.table.rows,
+                  
               };
-              $http.post('https://platform.comnsense.io/mturk/hit/', dataToSend
-               )
+              $http.post('https://platform.comnsense.io/mturk/hit/', dataToSend)
                   .then(function(response){
                       alert('all good');
                   }, function(error){
-                      $scope.errorContainer = "Error on sending data";
+                      $scope.errorContainer = "Error on sending data!";
               });
         }
-
+       
     }
 
 
     function canNotSave(){
       alert('You can not do that with sample data');
     }
-
+    
     // Delete row
     function deleteItem(row){
         if(!$scope.canDelete){
@@ -215,6 +219,6 @@ function MainCtrl($scope, $http, $location){
               alert('Row not found!');
             }
         }
-
+        
     };
 }
