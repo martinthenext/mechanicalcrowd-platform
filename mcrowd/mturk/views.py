@@ -64,10 +64,10 @@ class QuestionView(APIView):
             "lowerTask": hit.lower_task,
             "token": assignment.token,
             "table": {
-                "header": hit.task.get_col_names(),
+                "headers": hit.task.get_col_names(),
                 "rows": hit.get_rows(),
-                "functions": hit.get_functions()
-            }
+            },
+            "functions": hit.get_functions(),
         }
         return Response(data, status=200)
 
