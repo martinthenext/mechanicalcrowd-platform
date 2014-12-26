@@ -32,6 +32,7 @@ class TaskSerializer(serializers.ModelSerializer):
     edit_allowed = serializers.BooleanField(default=True, required=False)
     delete_allowed = serializers.BooleanField(default=True, required=False)
     active = serializers.BooleanField(read_only=True)
+    hits_per_user = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Task

@@ -25,6 +25,7 @@ class Task(models.Model):
     active = models.BooleanField(null=False, default=False)
     edit_allowed = models.BooleanField(null=False, default=True)
     delete_allowed = models.BooleanField(null=False, default=True)
+    hits_per_user = models.IntegerField(null=False, default=1)
 
     def get_col_names(self):
         return json.loads(self.columns)
