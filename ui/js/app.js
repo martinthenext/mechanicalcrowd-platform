@@ -1,7 +1,8 @@
-angular.module('CrudApp', [
+var app = angular.module('uiApp', [
     'xeditable'
-  ])
-.run(['editableOptions', '$http', function(editableOptions, $http) {
+  ]);
+
+app.run(['editableOptions', '$http', function(editableOptions, $http) {
 
   //editable Theme
   editableOptions.theme = 'bs3';
@@ -12,24 +13,24 @@ angular.module('CrudApp', [
   
 
 
-}])
+}]);
 
 // ENABLE HTML5Mode FOR Params
-.config(['$locationProvider', function($locationProvider){
+app.config(['$locationProvider', function($locationProvider){
     $locationProvider.html5Mode({
       enabled: true,
       requireBase: false
     });
-}])
+}]);
 
 //Filter so we can inject HTML from JSON
-.filter('to_trusted', ['$sce', function($sce){
+app.filter('to_trusted', ['$sce', function($sce){
         return function(text) {
             return $sce.trustAsHtml(text);
         };
-    }])
+    }]);
 
-.controller('MainCtrl', MainCtrl);
+app.controller('MainCtrl', MainCtrl);
 
 MainCtrl.$inject = ['$scope', '$http', '$location'];
 
@@ -80,13 +81,15 @@ function MainCtrl($scope, $http, $location){
     $scope.canEdit = false;
     $scope.canDelete = false;
     $scope.errorContainer = "";
+    $scope.smallErrorContainer = "";
+    $scope.allDone = false;
 
     var urlParams;
 
     activate();
 
 
-
+    //main function to start things up
     function activate(){
 
       if(!isOpenFromMTurk()){
@@ -104,6 +107,7 @@ function MainCtrl($scope, $http, $location){
       }
       if($scope.hasAssignment){
           $http.get('https://platform.comnsense.io/mturk/hit/', {
+          
             params: {
               worker_id: urlParams.workerId,
               hit_id: urlParams.hitId,
@@ -143,11 +147,12 @@ function MainCtrl($scope, $http, $location){
           return true;
         } else {
 
+          //regex to get the domain
           var referrer = document.referrer;
           var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i); 
           var domain = referrer.match(re) && referrer.match(re)[1];
 
-            //check if ends with mturk.com
+            //check if referrer ends with mturk.com
           if (domain.indexOf(mturk, domain.length - mturk.length) !== -1) {
 
             return true;
@@ -170,12 +175,12 @@ function MainCtrl($scope, $http, $location){
     }
               
    
-    // Send everything as POST
+    // Send data to server as POST
     function sendAll(){
 
         if(!$scope.canEdit){
 
-            alert('You can not edit, sorry');
+            $scope.smallErrorContainer = 'You can not edit, sorry';
 
         }
         else{
@@ -192,23 +197,37 @@ function MainCtrl($scope, $http, $location){
               };
               $http.post('https://platform.comnsense.io/mturk/hit/', dataToSend)
                   .then(function(response){
-                      alert('all good');
+                      externalSubmit();
+
                   }, function(error){
-                      $scope.errorContainer = "Error on sending data!";
+                      $scope.errorContainer = "Error on sending data to server!";
               });
         }
        
     }
 
 
+    //we submit this data after everything is done
+    function externalSubmit(){
+      $http.post('http://www.mturk.com/mturk/externalSubmit', {
+        assignmentId : urlParams.assignmentId,
+        success: true,
+      }).then(function(response){
+                      $scope.allDone = true;
+                  }, function(error){
+                      $scope.errorContainer = "Error on sending data to Mturk!";
+              });
+    }
+
+    //Show can not save error
     function canNotSave(){
-      alert('You can not do that with sample data');
+      $scope.smallErrorContainer = 'You can not do that with sample data';
     }
     
-    // Delete row
+    //Delete row in table
     function deleteItem(row){
         if(!$scope.canDelete){
-            alert('You cannot delete!');
+            $scope.smallErrorContainer = 'You cannot delete!';
         }
         else{
             var index = _.indexOf($scope.dataSet.table.rows, row);
@@ -216,7 +235,7 @@ function MainCtrl($scope, $http, $location){
               $scope.dataSet.table.rows[index] = null;
             }
             else{
-              alert('Row not found!');
+              $scope.smallErrorContainer = 'Row not found!';
             }
         }
         

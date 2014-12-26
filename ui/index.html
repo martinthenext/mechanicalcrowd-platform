@@ -1,29 +1,33 @@
 <!doctype html>
-<html ng-app="CrudApp">
+<html ng-app="uiApp">
 
 <head>
 
-    <link href="vendor/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="vendor/css/bootstrap.min.css" rel="stylesheet">
      <link href="css/style.css" rel="stylesheet">
 	
 
-    <script src="vendor/js/angular.min.js"></script>
+    <script src="vendor/js/angular.js"></script>
 
 
 
-   <script src="vendor/js/angular-resource.min.js"></script>
+   <script src="vendor/js/angular-resource.js"></script>
 
 
     <script src="vendor/js/lodash.js"></script>
     <script src="vendor/js/xeditable.js"></script>
     
-    <script src="js/app.js"></script>
+    <script src="js/app.js"></script> -->
+	
+	<!-- minified stuff -->
+	<link href="min/e0fa49ab.production.min.css" rel="stylesheet">
+    <script src="min/1ca8e628.production.min.js"></script>
 </head>
 
 <body ng-controller="MainCtrl">
 	<div class="container">
 
-		<h2>Table task</h2>
+		<h1 class="text-center">Table task</h1>
 
 		
 		<img src="img/spinner.gif" ng-hide="dataSet"/>
@@ -33,12 +37,20 @@
 		<div class="alert alert-danger" ng-show="errorContainer.length">
 			<h3>{{errorContainer}}</h3>
 		</div>
+
+		<div class="alert alert-success" ng-show="allDone">
+			<h3>Good job!</h3>
+			<p>The task is complete.</p>
+		</div>
 		
-		<div ng-show="!errorContainer.length">
+		<div ng-show="!errorContainer.length && !allDone">
 			<!-- sample data --> 
 			<div ng-hide="hasAssignment">
+				
+				<div class="well">
+					<p>{{sampleData.upperTask}}</p>
+				</div>
 
-				<h2>{{sampleData.upperText}}</h2>
 				<div class="table-responsive">
 					<table class="table table-striped" >
 					  <th ng-repeat="header in sampleData.dataSet.table.headers">
@@ -59,25 +71,30 @@
 						   
 						    <td ng-show="canDelete">
 
-						        <button class="btn btn-danger" ng-click="canNotSave()">
-						            <i class="glyphicon glyphicon-remove"></i>
-						        </button>
+						        <a href="#" class="danger" ng-click="canNotSave()">
+						            remove
+						        </a>
 						        
 						    </td>
 
 					  </tr>
 					</table>
+					<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
+
+					<p class="well" ng-bind-html="sampleData.dataSet.lowerTask | to_trusted"></p>
 				</div>
-			
+				<hr>
 				<p>Please note, that you can just take a HIT of this type once. If have already finished a HIT like this, you won't be able to take another one.</p>
 
 			</div>
 
 			<!-- real data -->
 			
-			<div ng-show="dataSet">
+			<div ng-show="hasAssignment">
 
-				<p>{{dataSet.upperText}}</p>
+				<div class="well">
+					<p>{{dataSet.upperTask}}</p>
+				</div>
 				<div class="table-responsive">
 					<table class="table table-striped" >
 					  <th ng-repeat="header in dataSet.table.headers">
@@ -98,23 +115,25 @@
 						   
 						    <td ng-show="canDelete">
 
-						        <button class="btn btn-danger" ng-click="deleteItem(row)">
-						            <i class="glyphicon glyphicon-remove"></i>
-						        </button>
+						        <a href="#" class="danger" ng-click="deleteItem(row)">
+						            remove
+						        </a>
 						        
 						    </td>
 
 					  </tr>
 					</table>
+					<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
 				</div>
 
-				<p ng-bind-html="dataSet.lowerTask | to_trusted"></p>
+				<p class="well" ng-bind-html="dataSet.lowerTask | to_trusted"></p>
 
-				<div class="text-center">
-					<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
-				</div>
+				
 
 			</div>
+			<div class="text-center">
+					<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
+				</div>
 		</div>
 
 		

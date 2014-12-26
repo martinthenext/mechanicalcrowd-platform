@@ -5,6 +5,12 @@
 
 
 /* app styles */
+
+.danger{
+	color: #d9534f;
+}
+
+
 .table-responsive .table td:first-child:nth-last-child(1) {
 	width: 100%;
 }
