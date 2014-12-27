@@ -8,9 +8,9 @@ from .serializers import AuditLogSerializer
 
 
 class LogView(ListAPIView):
-    serializer = AuditLogSerializer
-    queryset = AuditLog.objects
+    serializer_class = AuditLogSerializer
+    queryset = AuditLog.objects.all()
     paginate_by = 10
     paginate_by_param = 'page_size'
     max_paginate_by = 100
-    permission_classes = (IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)

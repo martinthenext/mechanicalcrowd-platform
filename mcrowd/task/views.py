@@ -152,4 +152,7 @@ class SubmitView(APIView):
             for hit in hits:
                 hit.disable()
             raise
-        return Response({"hits_created": len(hits)}, status=201)
+        data = []
+        for hit in hits:
+            data.append({"url": hit.url, "ident": hit.ident})
+        return Response(data, status=201)

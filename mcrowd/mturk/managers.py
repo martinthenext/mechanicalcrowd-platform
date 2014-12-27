@@ -83,7 +83,7 @@ class HitManager(models.Manager):
             URLHOST, hit.HITTypeId)
         logger.info(".. url: %s", url)
 
-        loggger.info(".. done: %s - %s", hit.HITId, hit.HITTypeId)
+        logger.info(".. done: %s - %s", hit.HITId, hit.HITTypeId)
 
         return self.model(
             ident=hit.HITId, task=task, group=hit.HITTypeId,
@@ -100,3 +100,25 @@ class HitManager(models.Manager):
         logger.info("approving assignment: %s", assignment_id)
         connection = self.get_connection()
         connection.approve_assignment(assignment_id)
+
+
+class AssignmentManager(models.Manager):
+    def get_active(self, turker, task):
+        active = self.filter(
+            turker=turker, hit__task=task, done=False, approved=False).all()
+        active = list(active)
+        assert len(active) <= 1
+        if active:
+            return active[0]
+
+    def ger_approved(self, turker, task):
+        approved = self.filter(
+            turker=turker, hit__task=task, done=True, approved=True).all()
+        approved = list(approved)
+        return approved
+
+    def get_rejected(self, turker, task):
+        rejected = self.filter(
+            turker=turker, hit__task=task, done=True, approved=False).all()
+        rejected = list(approved)
+        return rejected

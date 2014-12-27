@@ -15,14 +15,5 @@ def create_token(sender, instance, *args, **kwargs):
     logger.info("token for %s was created: %s", instance.ident, token)
 
 
-def finish_assignment(sender, instance, *args, **kwargs):
-    if instance.approved is None:
-        return
-    if instance.approved:
-        instance.approve(instance.ident)
-    else:
-        instance.reject(instance.ident)
-
-
 def check_constraint(sender, instance, *args, **kwargs):
-    assert instance.done is False and instance.approved is True
+    assert not(instance.done is False and instance.approved is True)

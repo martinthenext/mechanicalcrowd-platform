@@ -34,15 +34,28 @@ class QuestionView(APIView):
         return turker
 
     def get_new_assignment(self, assignment_id, hit, turker):
-        allowed, hit = turker.is_allowed_for_hit(hit, assignment_id)
-        if not allowed:
+        active = Assignment.objects.get_active(turker, hit.task)
+        if active:
+            if active.ident == assignment_id:
+                return active
+            else:
+                # active assignment exists but turker wants another
+                # let's reject active
+                active.reject()
+                active.save()
+                return Assignment.objects.create(
+                    turker=turker, hit=active.hit, ident=assignment_id)
+        # at this point we know that turker has no active assignment
+        approved = Assignment.objects.get_approved(turker, hit.task)
+        if len(approved) >= hit.task.hits_per_user:
             raise exceptions.PermissionDenied(
-                detail="this hit is not allowed for turker")
-        logger.info("assign hit %s to turker %s", hit.ident,  turker.ident)
-        assginment = Assignment.objects.get_or_create(
-            ident=assignment_id, hit=hit, turker=turker, done=False,
-            approved=None)
-        return assignment
+                detail="Too mach hits for one turker")
+        if [x for x in approved if x.hit == hit]:
+            raise exceptions.PermissionDenied(
+                detail="Already done")
+        # at this point we know that turker does not exceed limit
+        return Assignment.objects.create(
+            turker=turker, hit=hit, ident=assignment_id)
 
     def get_existing_assignment(self, assignment_id, turker, token):
         try:
@@ -53,10 +66,10 @@ class QuestionView(APIView):
         except Exception as e:
             logger.exception(e)
             raise exceptions.PermissionDenied(
-                detail="uknown assignment %s for turker %s", assignment_id,
-                turker.ident)
+                detail="uknown assignment %s for turker %s" % (
+                    assignment_id, turker.ident))
 
-    def get(self, request):
+    def parse_get(self, request):
         hit_id = request.GET.get("hit_id")
         worker_id = request.GET.get("worker_id")
         assignment_id = request.GET.get("assignment_id")
@@ -66,6 +79,26 @@ class QuestionView(APIView):
             raise BadRequest(detail="worker_id is required")
         if not assignment_id:
             raise BadRequest(detail="assignment_id is requred")
+        return hit_id, worker_id, assignment_id
+
+    def parse_post(self, request):
+        hit_id = request.DATA.get("mturk", {}).get("hit_id")
+        worker_id = request.DATA.get("mturk", {}).get("worker_id")
+        assignment_id = request.DATA.get("mturk", {}).get("assignment_id")
+        token = request.DATA.get("token")
+        rows = request.DATA.get("rows", [])
+        if not worker_id:
+            raise BadRequest(detail="worker_id is required")
+        if not assignment_id:
+            raise BadRequest(detail="assignment_id is requred")
+        if not token:
+            raise BadRequest(detail="token is requred")
+        if not rows:
+            raise BadRequest(detail="rows is requred")
+        return hit_id, worker_id, assignment_id, token, rows
+
+    def get(self, request):
+        hit_id, worker_id, assignment_id = self.parse_get(request)
         hit = self.get_hit(hit_id, disabled=False)
         turker = self.get_turker(worker_id)
         assignment = self.get_new_assignment(assignment_id, hit, turker)
@@ -82,19 +115,7 @@ class QuestionView(APIView):
         return Response(data, status=200)
 
     def post(self, request):
-        hit_id = request.DATA.get("mturk", {}).get("hit_id")
-        worker_id = request.DATA.get("mturk", {}).get("worker_id")
-        assignment_id = request.DATA.get("mturk", {}).get("assignment_id")
-        token = request.DATA.get("token")
-        rows = request.DATA.get("rows", [])
-        if not worker_id:
-            raise BadRequest(detail="worker_id is required")
-        if not assignment_id:
-            raise BadRequest(detail="assignment_id is requred")
-        if not token:
-            raise BadRequest(detail="token is requred")
-        if not rows:
-            raise BadRequest(detail="rows is requred")
+        hit_id, worker_id, assignment_id, token, rows = self.parse_post(request)
         turker = self.get_turker(worker_id)
         assignment = self.get_existing_assignment(assignment_id, turker, token)
         hit = assignment.hit
@@ -120,8 +141,7 @@ class QuestionView(APIView):
                 RowDiff(task=hit.task, number=number,
                         values=json.dumps(new), meta=json.dumps(meta)))
         RowDiff.objects.bulk_create(diff)
-        assignment.done = True
-        assignment.approved = True
+        assignment.approve()
         assignment.save()
         if hit.enough_assignments():
             hit.disable()
