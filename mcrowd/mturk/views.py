@@ -61,7 +61,7 @@ class QuestionView(APIView):
         try:
             assignment = Assignment.objects.get(
                 ident=assignment_id, turker=turker,
-                token=token, done=False, approved=None)
+                token=token, done=False, approved=False)
             return assignment
         except Exception as e:
             logger.exception(e)

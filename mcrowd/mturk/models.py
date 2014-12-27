@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 
 from .managers import HitManager, AssignmentManager
-from .hooks import create_token, finish_assignment, check_constraint
+from .hooks import create_token, check_constraint
 
 from mcrowd.task.models import Task
 
