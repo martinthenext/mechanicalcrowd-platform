@@ -111,7 +111,7 @@ class AssignmentManager(models.Manager):
         if active:
             return active[0]
 
-    def ger_approved(self, turker, task):
+    def get_approved(self, turker, task):
         approved = self.filter(
             turker=turker, hit__task=task, done=True, approved=True).all()
         approved = list(approved)
