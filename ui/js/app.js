@@ -209,7 +209,7 @@ function MainCtrl($scope, $http, $location){
 
     //we submit this data after everything is done
     function externalSubmit(){
-      $http.post('http://www.mturk.com/mturk/externalSubmit', {
+      $http.post('https://workersandbox.mturk.com/mturk/externalSubmit', {
         assignmentId : urlParams.assignmentId,
         success: true,
       }).then(function(response){
