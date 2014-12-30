@@ -30,6 +30,12 @@ app.filter('to_trusted', ['$sce', function($sce){
         };
     }]);
 
+app.filter('trusted_url', ['$sce', function ($sce) {
+    return function(url) {
+        return $sce.trustAsResourceUrl(url);
+    };
+}]);
+
 app.controller('MainCtrl', MainCtrl);
 
 MainCtrl.$inject = ['$scope', '$http', '$location'];
