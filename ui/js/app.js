@@ -85,6 +85,7 @@ function MainCtrl($scope, $http, $location){
     $scope.errorContainer = "";
     $scope.smallErrorContainer = "";
     $scope.allDone = false;
+    $scope.getMturkExternalSumbitUrl = "";
 
     var urlParams;
 
