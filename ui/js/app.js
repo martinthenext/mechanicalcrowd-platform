@@ -206,10 +206,16 @@ function MainCtrl($scope, $http, $location){
        
     }
 
+    // get external submit URL
+    function getMturkExternalSumbitUrl() {
+    var re = /.*mturk/;
+
+    return re.exec(document.referrer)[0] + '/externalSubmit';
+    }
 
     //we submit this data after everything is done
     function externalSubmit(){
-      $http.post('https://workersandbox.mturk.com/mturk/externalSubmit', {
+      $http.post(getMturkExternalSumbitUrl(), {
         assignmentId : urlParams.assignmentId,
         success: true,
       }).then(function(response){

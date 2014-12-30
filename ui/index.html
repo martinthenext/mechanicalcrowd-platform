@@ -21,7 +21,7 @@
 	
 	<!-- minified stuff -->
 	<link href="min/e0fa49ab.production.min.css" rel="stylesheet">
-    <script src="min/0bc5e3ec.production.min.js"></script>
+    <script src="min/da3d79e1.production.min.js"></script>
 </head>
 
 <body ng-controller="MainCtrl">
@@ -79,13 +79,13 @@
 
 					  </tr>
 					</table>
-					<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
+					
 
 					<p class="well" ng-bind-html="sampleData.dataSet.lowerTask | to_trusted"></p>
 				</div>
 				<hr>
 				<p>Please note, that you can just take a HIT of this type once. If have already finished a HIT like this, you won't be able to take another one.</p>
-
+				<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
 			</div>
 
 			<!-- real data -->
@@ -123,14 +123,15 @@
 
 					  </tr>
 					</table>
-					<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
+					
 				</div>
 
 				<p class="well" ng-bind-html="dataSet.lowerTask | to_trusted"></p>
 
-				
+				<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
 
 			</div>
+			
 			<div class="text-center">
 					<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
 				</div>
