@@ -2,8 +2,8 @@
 <html ng-app="uiApp">
 
 <head>
-
-    <!-- <link href="vendor/css/bootstrap.min.css" rel="stylesheet">
+<!-- 
+    <link href="vendor/css/bootstrap.min.css" rel="stylesheet">
      <link href="css/style.css" rel="stylesheet">
 	
 
@@ -21,7 +21,7 @@
 	
 	<!-- minified stuff -->
 	<link href="min/a4806fe2.production.min.css" rel="stylesheet">
-    <script src="min/41b5e64c.production.min.js"></script>
+    <script src="min/5a989086.production.min.js"></script>
 </head>
 
 <body ng-controller="MainCtrl">
@@ -141,7 +141,7 @@
 		<!-- hidden form to send externalSubmit -->
 		<div class="invisible">
 			<form id="externalForm" method="POST" action="{{getMturkExternalSumbitUrl}}" >
-				<input type="hidden" name="assignmentId" ng-model="assignmentId" />
+				<input type="hidden" name="assignmentId" value="{{assignmentId}}" />
 				<input type="hidden" name="success" value="true" />
 			</form>
 		</div>

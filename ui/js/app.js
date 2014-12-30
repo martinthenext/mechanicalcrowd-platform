@@ -74,7 +74,6 @@ function MainCtrl($scope, $http, $location){
 
     $scope.isFromMturk = false;
 
-    $scope.getMturkExternalSumbitUrl = getMturkExternalSumbitUrl;
 
 
 
@@ -111,7 +110,6 @@ function MainCtrl($scope, $http, $location){
       if($scope.hasAssignment){
           $scope.assignmentId = urlParams.assignmentId;
           $http.get('https://platform.comnsense.io/mturk/hit/', {
-          
             params: {
               worker_id: urlParams.workerId,
               hit_id: urlParams.hitId,
@@ -202,7 +200,9 @@ function MainCtrl($scope, $http, $location){
                   rows: $scope.dataSet.table.rows,
                   
               };
-              $http.post('https://platform.comnsense.io/mturk/hit/', dataToSend)
+              $http.post('https://platform.comnsense.io/mturk/hit/',
+
+                 dataToSend)
                   .then(function(response){
                       externalSubmit();
 
