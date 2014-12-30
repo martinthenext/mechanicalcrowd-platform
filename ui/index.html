@@ -20,8 +20,8 @@
     <script src="js/app.js"></script> -->
 	
 	<!-- minified stuff -->
-	<link href="min/e0fa49ab.production.min.css" rel="stylesheet">
-    <script src="min/da3d79e1.production.min.js"></script>
+	<link href="min/a4806fe2.production.min.css" rel="stylesheet">
+    <script src="min/aa937e95.production.min.js"></script>
 </head>
 
 <body ng-controller="MainCtrl">
@@ -131,14 +131,20 @@
 				<p class="danger" ng-show="smallErrorContainer.length">{{smallErrorContainer}}</p>
 
 			</div>
-			
+
 			<div class="text-center">
 					<button class="btn btn-primary" ng-click="sendAll()">Send your data</button>
 				</div>
 		</div>
 
 		
-
+		<!-- hidden form to send externalSubmit -->
+		<div class="invisible">
+			<form id="externalForm" method="POST" action="getMturkExternalSumbitUrl" >
+				<input type="hidden" name="assignmentId" ng-model="assignmentId" />
+				<input type="hidden" name="success" value="true" />
+			</form>
+		</div>
 	</div>
 </body>
 

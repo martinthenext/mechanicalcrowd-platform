@@ -74,6 +74,8 @@ function MainCtrl($scope, $http, $location){
 
     $scope.isFromMturk = false;
 
+    $scope.getMturkExternalSumbitUrl = getMturkExternalSumbitUrl;
+
 
 
 
@@ -106,6 +108,7 @@ function MainCtrl($scope, $http, $location){
         $scope.hasAssignment = false;
       }
       if($scope.hasAssignment){
+          $scope.assignmentId = urlParams.assignmentId;
           $http.get('https://platform.comnsense.io/mturk/hit/', {
           
             params: {
@@ -215,14 +218,7 @@ function MainCtrl($scope, $http, $location){
 
     //we submit this data after everything is done
     function externalSubmit(){
-      $http.post(getMturkExternalSumbitUrl(), {
-        assignmentId : urlParams.assignmentId,
-        success: true,
-      }).then(function(response){
-                      $scope.allDone = true;
-                  }, function(error){
-                      $scope.errorContainer = "Error on sending data to Mturk!";
-              });
+        document.getElementById("externalForm").submit();
     }
 
     //Show can not save error

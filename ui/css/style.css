@@ -9,6 +9,9 @@
 .danger{
 	color: #d9534f;
 }
+.invisible{
+	visibility: hidden;
+}
 
 
 .table-responsive .table td:first-child:nth-last-child(1) {
