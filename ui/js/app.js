@@ -154,6 +154,9 @@ function MainCtrl($scope, $http, $location){
           var referrer = document.referrer;
           var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i); 
           var domain = referrer.match(re) && referrer.match(re)[1];
+          var re2 = /.*mturk/;
+
+          $scope.getMturkExternalSumbitUrl = re2.exec(referrer)[0] + '/externalSubmit';
 
             //check if referrer ends with mturk.com
           if (domain.indexOf(mturk, domain.length - mturk.length) !== -1) {
@@ -209,12 +212,7 @@ function MainCtrl($scope, $http, $location){
        
     }
 
-    // get external submit URL
-    function getMturkExternalSumbitUrl() {
-    var re = /.*mturk/;
-
-    return re.exec(document.referrer)[0] + '/externalSubmit';
-    }
+    
 
     //we submit this data after everything is done
     function externalSubmit(){
