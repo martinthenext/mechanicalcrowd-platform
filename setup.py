@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name='mcrowd-platform',
-      version='0.0.1',
+      version='0.0.2',
       description="Mechanical Crowd Platform",
       author='Kirill Goldshtein',
       author_email='goldshtein.kirill@gmail.com',
