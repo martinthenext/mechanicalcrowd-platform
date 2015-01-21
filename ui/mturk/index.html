@@ -2,26 +2,8 @@
 <html ng-app="uiApp">
 
 <head>
-<!-- 
-    <link href="vendor/css/bootstrap.min.css" rel="stylesheet">
-     <link href="css/style.css" rel="stylesheet">
-	
-
-    <script src="vendor/js/angular.js"></script>
-
-
-
-   <script src="vendor/js/angular-resource.js"></script>
-
-
-    <script src="vendor/js/lodash.js"></script>
-    <script src="vendor/js/xeditable.js"></script>
-    
-    <script src="js/app.js"></script> -->
-	
-	<!-- minified stuff -->
-	<link href="min/a4806fe2.production.min.css" rel="stylesheet">
-    <script src="min/8483b480.production.min.js"></script>
+  <link href="mturk.css" rel="stylesheet">
+  <script src="mturk.js"></script>
 </head>
 
 <body ng-controller="MainCtrl">
@@ -29,10 +11,10 @@
 
 		<h1 class="text-center">Table task</h1>
 
-		
+
 		<img src="img/spinner.gif" ng-hide="dataSet"/>
-		
-		
+
+
 
 		<div class="alert alert-danger" ng-show="errorContainer.length">
 			<h3>{{errorContainer}}</h3>
@@ -42,11 +24,11 @@
 			<h3>Good job!</h3>
 			<p>The task is complete.</p>
 		</div>
-		
+
 		<div ng-show="!errorContainer.length && !allDone">
-			<!-- sample data --> 
+			<!-- sample data -->
 			<div ng-hide="hasAssignment">
-				
+
 				<div class="well">
 					<p>{{sampleData.upperTask}}</p>
 				</div>
@@ -56,11 +38,11 @@
 					  <th ng-repeat="header in sampleData.dataSet.table.headers">
 					    	{{header}}
 					  </th>
-			
+
 					  <th ng-show="canDelete">
 					  </th>
-				 		
-					  
+
+
 					  <tr ng-repeat="row in sampleData.dataSet.table.rows" ng-hide="row === null">
 
 						    <td ng-repeat="cell in row">
@@ -68,18 +50,18 @@
 						        {{cell}}
 						      </a>
 						    </td>
-						   
+
 						    <td ng-show="canDelete">
 
 						        <a href="#" class="danger" ng-click="canNotSave()">
 						            remove
 						        </a>
-						        
+
 						    </td>
 
 					  </tr>
 					</table>
-					
+
 
 					<p class="well" ng-bind-html="sampleData.dataSet.lowerTask | to_trusted"></p>
 				</div>
@@ -89,7 +71,7 @@
 			</div>
 
 			<!-- real data -->
-			
+
 			<div ng-show="hasAssignment">
 
 				<div class="well">
@@ -100,11 +82,11 @@
 					  <th ng-repeat="header in dataSet.table.headers">
 					    	{{header}}
 					  </th>
-			
+
 					  <th ng-show="canDelete">
 					  </th>
-				 		
-					  
+
+
 					  <tr ng-repeat="row in dataSet.table.rows" ng-hide="row === null">
 
 						    <td ng-repeat="cell in row">
@@ -112,18 +94,18 @@
 						        {{cell || 'empty'}}
 						      </a>
 						    </td>
-						   
+
 						    <td ng-show="canDelete">
 
 						        <a href="#" class="danger" ng-click="deleteItem(row)">
 						            remove
 						        </a>
-						        
+
 						    </td>
 
 					  </tr>
 					</table>
-					
+
 				</div>
 
 				<p class="well" ng-bind-html="dataSet.lowerTask | to_trusted"></p>
@@ -137,7 +119,7 @@
 				</div>
 		</div>
 
-		
+
 		<!-- hidden form to send externalSubmit -->
 		<div class="invisible">
 			<form id="externalForm" method="POST" action="{{getMturkExternalSumbitUrl | trusted_url}}" >

@@ -10,7 +10,7 @@ app.run(['editableOptions', '$http', function(editableOptions, $http) {
   //   //CSRF
   // $http.defaults.headers.common['X-CSRF-Token'] = getCsrf();
 
-  
+
 
 
 }]);
@@ -42,14 +42,14 @@ MainCtrl.$inject = ['$scope', '$http', '$location'];
 
 function MainCtrl($scope, $http, $location){
 
-    
-    
+
+
     $scope.dataSet = {
       table: {
         rows: []
       },
     };
-    
+
 
     //This is for Sample Data
     $scope.sampleData = {
@@ -63,7 +63,7 @@ function MainCtrl($scope, $http, $location){
                                rows: [
                                   ["Johm Smith Ltd", "Backer str. 14"]
                                ]
-                              
+
                             },
                           functions : ["edit", "delete"]
                 }
@@ -73,7 +73,7 @@ function MainCtrl($scope, $http, $location){
     $scope.updateRow = updateRow;
 
     $scope.deleteItem = deleteItem;
-    
+
     $scope.sendAll = sendAll;
 
     $scope.canNotSave = canNotSave;
@@ -104,8 +104,8 @@ function MainCtrl($scope, $http, $location){
         $scope.errorContainer = "Sorry, this page is supposed to be opened only from MTurk";
       }
 
-      
-      
+
+
 
       //check if we have a worker
       urlParams = $location.search();
@@ -115,25 +115,25 @@ function MainCtrl($scope, $http, $location){
       }
       if($scope.hasAssignment){
           $scope.assignmentId = urlParams.assignmentId;
-          $http.get('https://platform.comnsense.io/mturk/hit/', {
+          $http.get('/mturk/hit/', {
             params: {
               worker_id: urlParams.workerId,
               hit_id: urlParams.hitId,
               assignment_id: urlParams.assignmentId,
             },
-            
+
           }).then(function(response){
                 //parse response
                 $scope.dataSet = response.data;
                 $scope.csrf = response.data.token;
 
-               
+
 
                 if(_.contains($scope.dataSet.functions, 'edit')){
-                  $scope.canEdit = true;      
+                  $scope.canEdit = true;
                 }
                 if(_.contains($scope.dataSet.functions, 'delete')){
-                  $scope.canDelete = true;      
+                  $scope.canDelete = true;
                 }
 
 
@@ -157,13 +157,15 @@ function MainCtrl($scope, $http, $location){
 
           //regex to get the domain
           var referrer = document.referrer;
-          var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i); 
+          var re = new RegExp(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
           var domain = referrer.match(re) && referrer.match(re)[1];
           var re2 = /.*mturk/;
 
+	  console.log(referrer);
+
           $scope.getMturkExternalSumbitUrl = re2.exec(referrer)[0] + '/externalSubmit';
 
-            //check if referrer ends with mturk.com
+          //check if referrer ends with mturk.com
           if (domain.indexOf(mturk, domain.length - mturk.length) !== -1) {
 
             return true;
@@ -177,15 +179,15 @@ function MainCtrl($scope, $http, $location){
       }
 
 
-    
+
 
     // Update dataSet with proper row and cell
     function updateRow(cellIndex, rowIndex, data){
 
         $scope.dataSet.table.rows[rowIndex][cellIndex] = data;
     }
-              
-   
+
+
     // Send data to server as POST
     function sendAll(){
 
@@ -197,16 +199,16 @@ function MainCtrl($scope, $http, $location){
         else{
               var dataToSend = {
                   token: $scope.csrf,
-                  
+
                   mturk: {
                     worker_id: urlParams.workerId,
                     assignment_id: urlParams.assignmentId,
                     hit_id: urlParams.hitId,
                   },
                   rows: $scope.dataSet.table.rows,
-                  
+
               };
-              $http.post('https://platform.comnsense.io/mturk/hit/',
+              $http.post('/mturk/hit/',
 
                  dataToSend)
                   .then(function(response){
@@ -216,10 +218,10 @@ function MainCtrl($scope, $http, $location){
                       $scope.errorContainer = "Error on sending data to server!";
               });
         }
-       
+
     }
 
-    
+
 
     //we submit this data after everything is done
     function externalSubmit(){
@@ -230,7 +232,7 @@ function MainCtrl($scope, $http, $location){
     function canNotSave(){
       $scope.smallErrorContainer = 'You can not do that with sample data';
     }
-    
+
     //Delete row in table
     function deleteItem(row){
         if(!$scope.canDelete){
@@ -245,6 +247,6 @@ function MainCtrl($scope, $http, $location){
               $scope.smallErrorContainer = 'Row not found!';
             }
         }
-        
+
     };
-}
+};
