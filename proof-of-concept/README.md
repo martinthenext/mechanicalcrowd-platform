@@ -2,10 +2,10 @@
 
 1. Run server.py
     
-       user$ virtualenv ./env
-       user$ . ./env/bin/activate
-       user$ pip install tornado
-       user$ ./server.py
+        user$ virtualenv ./env
+        user$ . ./env/bin/activate
+        user$ pip install tornado
+        user$ ./server.py
     
 2. Open **test.xlsm** with macros
 
