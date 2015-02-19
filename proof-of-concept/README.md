@@ -6,7 +6,7 @@
         user$ . ./env/bin/activate
         user$ pip install tornado
 	user$ pip install numpy
-        user$ ./server.py -P <path to online_learning directory>
+        user$ ./server.py -P *path to online_learning directory*
 
 2. Open **test.xlsm** with macros
 
