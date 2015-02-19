@@ -3,30 +3,55 @@ import uuid
 from hashlib import md5
 import tornado.ioloop
 import tornado.web
-
-
-def analyze(value):
-    if value.isdigit():
-        digit = int(value)
-        if digit % 2 == 0:
-            return "OK"
-        else:
-            return "FAIL"
-    else:
-        return "DNK"
+import argparse
+import sys
 
 
 class AnalyzerHandler(tornado.web.RequestHandler):
-    def post(self):
-        result = []
-        print("ARGS: %s" % self.request.body_arguments.items())
-        for cell, values in self.request.body_arguments.items():
+    def get_action(self):
+        return self.request.body_arguments["action"][0]
+
+    def prepare_json(self, action):
+        json = {"doc_col_id": 1, "action": action, "data": []}
+        cells = []
+        for cell, values in sorted(self.request.body_arguments.items()):
             if cell in ["action"]:
                 continue
             value = values[0] if values else ""
-            result.append("%s=%s" % (cell, analyze(value)))
-        output = "&".join(result)
-        self.write(output)
+            if action == "check_new":
+                json["data"].append(value)
+                cells.append(cell)
+            elif action == "cell_unmarked":
+                json["data"] = value
+                cells.append(cell)
+            elif action == "cell_corrected":
+                json["data"] += values
+                cells.append(cell)
+            else:
+                self.set_status(400)
+                self.finish()
+                return None, None
+        return json, cells
+
+    def analyze(self, action, json):
+        VARIANTS = ["DONTKNOWN", "INCORRECT", "CORRECT"]
+        result = online_query(json)
+        if action in ("check_new", "check_old"):
+            return map(lambda x: VARIANTS[x + 1], result)
+        return [VARIANTS[2]]
+
+    def post(self):
+        print("ARGS: %s" % self.request.body_arguments.items())
+        action = self.get_action()
+        json, cells = self.prepare_json(action)
+        if json is None:
+            return
+        print("JSON:\n%s\n" % json)
+        result = self.analyze(action, json)
+        if result:
+            result = "&".join(map(lambda x: "%s=%s" % x, zip(cells, result)))
+            print("RESULT: %s" % result)
+            self.write(result)
         self.set_status(200)
 
 
@@ -41,7 +66,17 @@ def load_application():
     return application
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-P", "--pythonpath", default=".")
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
+    sys.path.append(args.pythonpath)
+    from online_query import online_query
+
     application = load_application()
     application.listen(8000, address="127.0.0.1")
     tornado.ioloop.IOLoop.instance().start()
