@@ -19,8 +19,9 @@ def analyze(value):
 class AnalyzerHandler(tornado.web.RequestHandler):
     def post(self):
         result = []
+        print("ARGS: %s" % self.request.body_arguments.items())
         for cell, values in self.request.body_arguments.items():
-            if cell in ["type"]:
+            if cell in ["action"]:
                 continue
             value = values[0] if values else ""
             result.append("%s=%s" % (cell, analyze(value)))
