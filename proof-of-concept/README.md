@@ -1,14 +1,17 @@
 ### Proof of Concept
 
 1. Run server.py
-    
+
         user$ virtualenv ./env
         user$ . ./env/bin/activate
         user$ pip install tornado
-        user$ ./server.py
-    
+	user$ pip install numpy
+        user$ ./server.py -P <path to online_learning directory>
+
 2. Open **test.xlsm** with macros
 
-3. Try to edit green table
+3. Click Sheet2
 
-4. Profit. Cells with odd digits are red!
+4. Click Sheet1
+
+5. Try add new address
