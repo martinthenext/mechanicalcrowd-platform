@@ -11,11 +11,17 @@ class AnalyzerHandler(tornado.web.RequestHandler):
     def get_action(self):
         return self.request.body_arguments["action"][0]
 
-    def prepare_json(self, action):
-        json = {"doc_col_id": 1, "action": action, "data": []}
+    def get_column_name(self):
+        return self.request.body_arguments["column"][0]
+
+    def get_column_id(self, colname):
+        return colname.__hash__()
+
+    def prepare_json(self, col_id, action):
+        json = {"doc_col_id": col_id, "action": action, "data": []}
         cells = []
         for cell, values in sorted(self.request.body_arguments.items()):
-            if cell in ["action"]:
+            if cell in ["action", "column"]:
                 continue
             value = values[0] if values else ""
             if action == "check_new":
@@ -43,7 +49,8 @@ class AnalyzerHandler(tornado.web.RequestHandler):
     def post(self):
         print("ARGS: %s" % self.request.body_arguments.items())
         action = self.get_action()
-        json, cells = self.prepare_json(action)
+        col_id = self.get_column_id(self.get_column_name())
+        json, cells = self.prepare_json(col_id, action)
         if json is None:
             return
         print("JSON:\n%s\n" % json)
