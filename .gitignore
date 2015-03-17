@@ -16,3 +16,4 @@ cabal-dev
 node_modules
 *.pid
 *.swp
+addin/addin/bin/Debug/
