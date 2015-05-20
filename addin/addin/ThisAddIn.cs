@@ -49,9 +49,20 @@ namespace addin
             this.Application.WorkbookOpen += new Excel.AppEvents_WorkbookOpenEventHandler(ThisAddIn_WorkbookOpen);
         }
 
+        void ThisAddIn_CellsChange(Excel.Range target)
+        {
+            SendEvent("Change: " + target.Cells.Count);
+        }
+
         void ThisAddIn_WorkbookOpen(Excel.Workbook Wb)
         {
-            SendEvent("Open: " + Wb.FullName);
+            SendEvent("Open workbook: " + Wb.FullName);
+
+            foreach (Excel.Worksheet ws in Wb.Worksheets)
+            {
+                SendEvent("Worksheet named " + ws.Name);
+                ws.Change += ThisAddIn_CellsChange;
+            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
