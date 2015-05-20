@@ -47,11 +47,14 @@ namespace addin
             InitZmqClient();
             SendEvent(sender, e);
             this.Application.WorkbookOpen += new Excel.AppEvents_WorkbookOpenEventHandler(ThisAddIn_WorkbookOpen);
+
+
+
         }
 
         void ThisAddIn_CellsChange(Excel.Range target)
         {
-            SendEvent("Change: " + target.Cells.Count);
+            SendEvent("Change:" + target.Cells.Count);
         }
 
         void ThisAddIn_WorkbookOpen(Excel.Workbook Wb)
