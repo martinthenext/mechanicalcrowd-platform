@@ -47,14 +47,17 @@ namespace addin
             InitZmqClient();
             SendEvent(sender, e);
             this.Application.WorkbookOpen += new Excel.AppEvents_WorkbookOpenEventHandler(ThisAddIn_WorkbookOpen);
+            this.Application.SheetChange += new Excel.AppEvents_SheetChangeEventHandler(ThisAddIn_SheetChange);
+        }
 
-
-
+        private void ThisAddIn_SheetChange(object Sh, Excel.Range Target)
+        {
+            SendEvent("Worksheet change: " + (Sh as Excel.Worksheet).Name + "; Value: " + Target.Value2);
         }
 
         void ThisAddIn_CellsChange(Excel.Range target)
         {
-            SendEvent("Change:" + target.Cells.Count);
+            SendEvent("Change:" + target.Cells.Value);
         }
 
         void ThisAddIn_WorkbookOpen(Excel.Workbook Wb)
@@ -64,7 +67,6 @@ namespace addin
             foreach (Excel.Worksheet ws in Wb.Worksheets)
             {
                 SendEvent("Worksheet named " + ws.Name);
-                ws.Change += ThisAddIn_CellsChange;
             }
         }
 
