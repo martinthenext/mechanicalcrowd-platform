@@ -3,6 +3,7 @@ import zmq
 import threading
 import uuid
 import json
+import time
 
 
 def worker(context):
@@ -20,6 +21,7 @@ def worker(context):
         print "Worker '%s' receive from client '%s' payload: %s" % \
             (ident, client, payload)
         # do something with payload and return result
+        time.sleep(10)
         data = json.dumps({"client": client, "payload": "A1"})
 
 
@@ -60,14 +62,23 @@ def main():
 
     def frontend_routine(socks, available):
         if frontend in socks and socks[frontend] == zmq.POLLIN:
-            ident, _, payload = frontend.recv_multipart()
+            parts = frontend.recv_multipart()
+            ident = _ = payload = None
+            print "received to fronted: %s" % parts
+            try:
+                ident, _, payload = parts
+            except:
+                try:
+                    _1, _2, ident, _, payload = parts               
+                except:
+                    return
             if ident == payload and ident.startswith("async"):
                 # initializing frontends
                 frontends[ident] = True
                 print "long polling request from '%s'" % ident
             elif ident.startswith("event"):  # from excel to python
                 print "event request from '%s'" % ident
-                client = "async-" + ident.split("-")[1]
+                client = "async-" + "-".join(ident.split("-")[1:])
                 if frontends.get(client):
                     event = json.dumps({"client": client, "payload": payload})
                     print "sending to worker '%s' payload: %s" % \
@@ -79,6 +90,8 @@ def main():
                     print ("client '%s' is not available, "
                            "could not send payload: %s") % (client, payload)
                 frontend.send_multipart([str(ident), "", "OK"])  # fast answer
+            else:
+                print "unexpected %s: %s" % (ident, payload)
 
     for _ in xrange(worker_count):
         threading.Thread(target=worker, args=(context,)).start()
